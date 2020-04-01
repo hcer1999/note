@@ -2,7 +2,7 @@
 home: true
 heroImage: http://q.qlogo.cn/headimg_dl?dst_uin=1826024975&spec=640&img_type=jpg
 actionText: 开启前端之路 →
-actionLink: /notes/
+actionLink: /strat/
 features:
   - title: 简洁至上
     details: 以 Markdown 为中心的项目结构，以最少的配置帮助你专注于写作。

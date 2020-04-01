@@ -394,38 +394,86 @@ var date = new Date();
 
 ## 字符串方法
 
-### 查找字符串
+### charAt()
 
-字符串使用 indexOf() 来定位字符串中某一个指定的字符首次出现的位置：
-
-~~~javascript
-var str="Hello world, welcome to the universe.";
-var n=str.indexOf("welcome");
-~~~
-
-如果没找到对应的字符函数返回-1
-
-lastIndexOf() 方法在字符串末尾开始查找字符串出现的位置。
-
-### 内容匹配
-
-**match()**函数用来查找字符串中特定的字符，并且如果找到的话，则返回这个字符。
+>说明：返回在指定位置的字符，索引从0开始
 
 ~~~javascript
-var str="Hello world!";
-document.write(str.match("world") + "<br>");
-document.write(str.match("World") + "<br>");
-document.write(str.match("world!"));
+let str = 'abcdef'
+console.log(str.charAt(2)) // c
 ~~~
 
-### 替换内容
+### indexOf()
 
-**replace()** 方法在字符串中用某些字符替换另一些字符。
+>说明：查找字符串是否存在，第一个参数为需要查找的字符串，第二个参数可选，为开始查找的位置。如存在则返回所在位置，不存在则返回-1
 
 ~~~javascript
-str="Please visit Microsoft!"
-var n=str.replace("Microsoft","Runoob");
+let str = "Hello World"
+console.log(str.indexOf("l")) //2 找到了则立即返回，即使后面还存在该字符
+console.log(str.indexOf("l",4)) //9 从第4个字符开始查找也就是从第一个o开始查找
+console.log(str.indexOf("b")) //-1
 ~~~
+
+### lastIndexOf()
+
+>说明：从字符串尾部开始查找，其他与indexOf一样
+
+### replace()
+
+>说明：用来替换整个字符串中的某段文本。第一个参数为需要被替换的文本，可以使用正则表达式语法，第二个参数为用来替换的文本。不改变文本，返回替换后的文本。
+
+~~~javascript
+let str = "Hello World"
+let newStr = str.replace("l","y")
+console.log(str) // Hello World
+console.log(newStr) // Heylo World   默认只替换一次
+// 使用正则表达式可以全局替换
+newStr = str.replace(/l/g,"y")
+console.log(newStr) // Heyyo Woryd 使用正则就把全部的l都换成y
+~~~
+
+### slice()
+
+>说明：用来提取字符串的某个部分，第一个参数为从哪个位置开始提取，第二个参数为提取到第几个位置，如果省略第二个参数，则取到最后一个位置。下标从0开始。返回提取出来的文本，不改变原文本
+
+~~~javascript
+let str = 'Hello'
+console.log(str.slice(2)) // llo
+console.log(str.slice(0,3)) // Hel 提取到下标为3的位置但是不包括下标3的字符
+~~~
+
+### split()
+
+>说明：用某个指定的字符把字符串分割成数组，第一个参数为用来分割的字符，第二个参数为分割的数组设置最大长度，不写则不限制长度。不改变原字符串，返回分割后的数组。
+
+~~~javascript
+let str = "How are you"
+console.log(str.split("")) // ["H", "o", "w", " ", "a", "r", "e", " ", "y", "o", "u"]  设置空则每个字符之间都分割
+console.log(str.split("", 5)) // ["H", "o", "w", " ", "a"]
+console.log(str.split(" ")) // ["How", "are", "you"]
+~~~
+
+### substr()
+
+>说明：在字符串中取出从某个下标开始的指定数目的字符。第一个参数为开始的下标，第二个参数为取出文本的长度，不写则取到字符串最后的位置。不改变原文本，返回改变后的文本。
+
+~~~javascript
+let str = 'abcdefg'
+console.log(str.substr(3)) // defg 从下标3开始，包含下标3，取到尾部
+console.log(str.substr(2,6)) //cdefg 取到下标6，包括下标6
+~~~
+
+### substring()
+
+>说明：用于提取字符串中介于两个指定下标之间的字符，与substr差别不大
+
+~~~javascript
+let str = 'abcdefg'
+console.log(str.substring(3)) // defg
+console.log(str.substring(2, 6)) // cdef 不包括下标6
+~~~
+
+
 
 ### 大小写转换
 
@@ -437,36 +485,138 @@ var txt1=txt.toUpperCase();   // txt1 文本会转换为大写
 var txt2=txt.toLowerCase();   // txt2 文本会转换为小写
 ~~~
 
-### 分割文本
+## 数组方法
 
-字符串使用**split()**函数分割文本为数组：
+### push()
 
-~~~javascript
-txt="a,b,c,d,e"  // String
-txt.split(",");  // 使用逗号分隔
-txt.split(" ");  // 使用空格分隔
-txt.split("|");  // 使用竖线分隔 
-~~~
-
-### charAt()
-
-charAt() 方法可返回指定位置的字符
+>说明：往数组中的尾部添加数据，任意数量参数，参数为要添加的数据，可以是数组，字符串，对象。改变原数组，返回值为添加后数组的长度。往数组中的尾部添加数据，任意数量参数，参数为要添加的数据，可以是数组，字符串，对象。改变原数组，返回值为添加后数组的长度。
 
 ~~~javascript
-var str="Hello world!"
-document.write(str.charAt(1))
-//输出e
+const arr = [1,2,3]
+arr.push(4,"5")
+console.log(arr) // [1,2,3,4,"5"]
 ~~~
 
-### charCodeAt() 
+### unshift()
 
-charCodeAt() 方法可返回指定位置的字符的 Unicode 编码。这个返回值是 0 - 65535 之间的整数。
+>说明：往数组最前部添加数据，任意数量参数，参数为要添加的数据，可以是数组，字符串，对象。改变原数组，返回值为添加后数组的长度。
 
-```javascript
-var str="Hello world!"
-document.write(str.charCodeAt(1)
-//输出101
-```
+~~~javascript
+const arr = [1,2,3,4]
+arr.unshift(5,"6")
+console.log(arr) // [5,"6",1,2,3,4]
+~~~
+
+### pop()
+
+>说明：弹出数组的最后一个元素，返回值为弹出的元素，改变原数组。弹出数组的最后一个元素，返回值为弹出的元素，改变原数组。
+
+~~~javascript
+const arr = [1,2,3,4,5]
+const newArr = arr.pop()
+console.log(arr) // [1,2,3,4]
+console.log(newArr) // 5
+~~~
+
+### shift()
+
+>说明：弹出数组的头部第一个元素，返回值为弹出的元素，改变原数组
+
+~~~javascript
+const arr = [1,2,3,4,5]
+const newArr = arr.shift()
+console.log(arr) // [2,3,4,5]
+console.log(newArr) // 1
+~~~
+
+### slice()
+
+>说明：两个参数，第一个参数为从第几个开始0为第一个，第二个参数为取到第几个，省略则取到最后一个，不改变原数组。
+
+~~~javascript
+const arr = [1,2,3,4,5]
+console.log(arr.slice(0)) // [1,2,3,4,5]
+console.log(arr.slice(0,3)) // [1,2,3]
+console.log(arr) // [1,2,3,4,5] 原数组未受到影响
+~~~
+
+### splice()
+
+>说明：可用来做对数组的增，删，改功能，重点在前两个参数。第一个参数为规定添加/删除的位置，0为往头部添加，1为在第一个元素之后。使用负数可以从数组尾部开始计算。第二个参数为要删除的项目数量，如果为0则不删除项目。后面的参数可以为无限个，为要添加的元素，返回值为删除的元素，如果有的话。方法改变原数组。
+
+~~~javascript
+// 在头部添加元素
+const arr = [1,2,3,4,5]
+const newArr = arr.splice(0,0,"6",7)
+console.log(arr) // ["6", 7, 1, 2, 3, 4, 5]
+console.log(newArr) // [] 因为未删除元素，所以为空数组
+// ------------------
+// 在第三个位置之后添加元素
+const arr = [1,2,3,4,5]
+const newArr = arr.splice(3,0,"6",7)
+console.log(arr) //  [1, 2, 3, "6", 7, 4, 5]
+console.log(newArr) // [] 因为未删除元素，所以为空数组
+// ------------------
+// 从第一个开始删除3个元素
+const arr = [1,2,3,4,5]
+const newArr = arr.splice(0,3)
+console.log(arr) //  [4, 5]  
+console.log(newArr) // [1, 2, 3] 为删除的3个元素
+// ------------------
+// 从第二个元素之后替换2个元素为6，7
+const arr = [1,2,3,4,5]
+const newArr = arr.splice(2,2,6,7)
+console.log(arr) //  [1, 2, 6, 7, 5]
+console.log(newArr) // [3, 4] 为删除的2个元素
+~~~
+
+### concat
+
+>说明：连接数组的方法，不改变原数组
+
+~~~javascript
+const arr = [1,2,3,4]
+const arr1 = ["Hello","World"]
+const arr3 = arr.concat(arr1)
+console.log(arr) // [1, 2, 3, 4] 不改变原数组
+console.log(arr3) // [1, 2, 3, 4, "Hello", "World"]
+// 也可以这样连接数组
+const arr4 = [...arr,...arr1]
+console.log(arr4)
+~~~
+
+### sort()
+
+>说明：排序函数，接收一个特殊的方法,改变原数组。
+
+~~~javascript
+const arr = [4,21,532,54,43,74]
+arr.sort(function(a,b){
+    return a > b ? 1 : -1// 把这里的1改成-1，-1改成1则使用倒序排序
+})
+console.log(arr)// [4, 21, 43, 54, 74, 532]
+~~~
+
+### join()
+
+>说明：把数组的每个元素用指定的字符连接成一个字符串,不改变原数组。
+
+~~~javascript
+const arr = [12,34,3,435,"Hello","你好"]
+let str = arr.join("-")
+console.log(arr) // [12, 34, 3, 435, "Hello", "你好"]
+console.log(str) // 12-34-3-435-Hello-你好
+~~~
+
+### 清空数组
+
+~~~javascript
+const arr = [1,2,3]
+arr = [] // 第一种方法
+arr.length = 0 // 第二种方法，推荐
+arr.splice(0) //第三种方法
+while(arr.pop){} // 第四种方法
+~~~
 
 ## localStorage
 

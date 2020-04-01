@@ -65,5 +65,21 @@ module.exports = [
         ]
       }
     ]
+  },
+  {
+    text: '个人站点',
+    items: [
+      {
+        text: '博客',
+		link: 'http://blog.wcnm.kim/'
+      },{
+        text: 'Github',
+		link: 'https://github.com/hcer1999'
+      },
+      {
+        text: 'Gitee',
+		link: 'https://gitee.com/hcer1999'
+      }
+    ]
   }
 ]
