@@ -6,6 +6,8 @@
 
 ### [JS 笔记](/notes/javascript.html)
 
+### [ES6 笔记](/notes/es6.html)
+
 ### [jQuery 笔记](/notes/jquery.html)
 
 ### [数据库 笔记](/notes/sql.html)
