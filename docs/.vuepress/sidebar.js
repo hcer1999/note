@@ -15,6 +15,11 @@ module.exports = {
       collapsable: true,
       children: ['/notes/javascript']
     },
+	{
+      title: 'ES6笔记',
+      collapsable: true,
+      children: ['/notes/es6']
+    },
     {
       title: 'jQuery笔记',
       collapsable: true,
