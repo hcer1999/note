@@ -46,7 +46,7 @@ module.exports = [
     text: '常用工具',
     items: [
       {
-        text: '在线编辑',
+        text: '在线工具',
         items: [
           { text: '图片外链', link: 'https://sm.ms/' },
           { text: '10分钟邮箱', link: 'https://bccto.me/' },
@@ -73,6 +73,10 @@ module.exports = [
         text: '博客',
 		link: 'http://blog.wcnm.kim/'
       },{
+        text: '图片外链',
+		link: 'http://img.wcnm.kim/'
+      },
+	  {
         text: 'Github',
 		link: 'https://github.com/hcer1999'
       },

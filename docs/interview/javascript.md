@@ -972,3 +972,32 @@ tmp.parentNode.insertBefore(s, tmp);
 ```
 
 兼容所有浏览器
+
+## 二十七. instanceof有什么作用？
+
+`instanceof`的内部机制是通过判断对象的原型链中是不是能找到类型的`prototype`
+
+使用`instanceof`判断一个对象是否为数组。`instanceof`会判断这个对象的原型链上是否会找到对应的`Array`的原型，找到返回`true`，否则返回`false`。
+
+```js
+[] instanceof Array; // true
+```
+
+但`instanceof`只能用来判断对象类型，原始类型不可以。并且所有对象类型`instanceof` `Object` 都是 `true`。
+
+```js
+[] instanceof Object; // true
+```
+
+优点：`instanceof`可以弥补`Object.prototype。toString.call()`不能判断自定义实例化对象的缺点。
+
+缺点：`instanceof`只能用来判断对象类型，原始类型不可以。并且所有对象类型的`instanceof Object` 都是`true`，且不同于其他两种方法的是它不能检测出`iframes`。
+
+```js
+function f(name) {
+  this.name = name;
+}
+var f1 = new f("martin");
+console.log(f1 instanceof f); //true
+```
+

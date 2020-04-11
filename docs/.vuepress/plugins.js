@@ -1,1 +1,1 @@
-module.exports = ['@vuepress/plugin-back-to-top']
+module.exports = ['@vuepress/back-to-top', '@vuepress/active-header-links', '@vuepress/nprogress'];

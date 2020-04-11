@@ -2,7 +2,791 @@
 
 记录ES6一些新特性，新方法。
 
-## 关于Promise
+> 引用阮一峰大神的[ECMAScript 6 入门](https://es6.ruanyifeng.com/)
+>
+> 侵权请联系:bingkelele007@163.com
+
+## let与const
+
+### let
+
+#### 基本用法
+
+ES6 新增了`let`命令，用来声明变量。它的用法类似于`var`，但是所声明的变量，只在`let`命令所在的代码块内有效。
+
+```javascript
+{
+  let a = 10;
+  var b = 1;
+}
+
+a // ReferenceError: a is not defined.
+b // 1
+```
+
+上面代码在代码块之中，分别用`let`和`var`声明了两个变量。然后在代码块之外调用这两个变量，结果`let`声明的变量报错，`var`声明的变量返回了正确的值。这表明，`let`声明的变量只在它所在的代码块有效。
+
+#### 不存在变量提升
+
+`var`命令会发生“变量提升”现象，即变量可以在声明之前使用，值为`undefined`。这种现象多多少少是有些奇怪的，按照一般的逻辑，变量应该在声明语句之后才可以使用。
+
+为了纠正这种现象，`let`命令改变了语法行为，它所声明的变量一定要在声明后使用，否则报错。
+
+```javascript
+// var 的情况
+console.log(foo); // 输出undefined
+var foo = 2;
+
+// let 的情况
+console.log(bar); // 报错ReferenceError
+let bar = 2;
+```
+
+上面代码中，变量`foo`用`var`命令声明，会发生变量提升，即脚本开始运行时，变量`foo`已经存在了，但是没有值，所以会输出`undefined`。变量`bar`用`let`命令声明，不会发生变量提升。这表示在声明它之前，变量`bar`是不存在的，这时如果用到它，就会抛出一个错误。
+
+#### 暂时性死区(TDZ)
+
+只要块级作用域内存在`let`命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
+
+```javascript
+var tmp = 123;
+
+if (true) {
+  tmp = 'abc'; // ReferenceError
+  let tmp;
+}
+```
+
+上面代码中，存在全局变量`tmp`，但是块级作用域内`let`又声明了一个局部变量`tmp`，导致后者绑定这个块级作用域，所以在`let`声明变量前，对`tmp`赋值会报错。
+
+ES6 明确规定，如果区块中存在`let`和`const`命令，这个区块对这些命令声明的变量，从一开始就形成了封闭作用域。凡是在声明之前就使用这些变量，就会报错。
+
+总之，在代码块内，使用`let`命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称 TDZ）。
+
+另外，下面的代码也会报错，与`var`的行为不同。
+
+```javascript
+// 不报错
+var x = x;
+
+// 报错
+let x = x;
+// ReferenceError: x is not defined
+```
+
+上面代码报错，也是因为暂时性死区。使用`let`声明变量时，只要变量在还没有声明完成前使用，就会报错。上面这行就属于这个情况，在变量`x`的声明语句还没有执行完成前，就去取`x`的值，导致报错”x 未定义“。
+
+ES6 规定暂时性死区和`let`、`const`语句不出现变量提升，主要是为了减少运行时错误，防止在变量声明前就使用这个变量，从而导致意料之外的行为。这样的错误在 ES5 是很常见的，现在有了这种规定，避免此类错误就很容易了。
+
+总之，暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。
+
+#### 不允许重复声明
+
+`let`不允许在相同作用域内，重复声明同一个变量。
+
+```javascript
+// 报错
+function func() {
+  let a = 10;
+  var a = 1;
+}
+
+// 报错
+function func() {
+  let a = 10;
+  let a = 1;
+}
+```
+
+因此，不能在函数内部重新声明参数。
+
+```javascript
+function func(arg) {
+  let arg;
+}
+func() // 报错
+
+function func(arg) {
+  {
+    let arg;
+  }
+}
+func() // 不报错
+```
+
+#### 块级作用域
+
+##### 为什么需要块级作用域？
+
+ES5 只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。
+
+1. 内层变量可能会覆盖外层变量。
+
+```javascript
+var tmp = new Date();
+
+function f() {
+  console.log(tmp);
+  if (false) {
+    var tmp = 'hello world';
+  }
+}
+
+f(); // undefined
+```
+
+上面代码的原意是，`if`代码块的外部使用外层的`tmp`变量，内部使用内层的`tmp`变量。但是，函数`f`执行后，输出结果为`undefined`，原因在于变量提升，导致内层的`tmp`变量覆盖了外层的`tmp`变量。
+
+2. 用来计数的循环变量泄露为全局变量。
+
+```javascript
+var s = 'hello';
+
+for (var i = 0; i < s.length; i++) {
+  console.log(s[i]);
+}
+
+console.log(i); // 5
+```
+
+上面代码中，变量`i`只用来控制循环，但是循环结束后，它并没有消失，泄露成了全局变量。
+
+##### ES6 的块级作用域
+
+`let`实际上为 JavaScript 新增了块级作用域。
+
+```javascript
+function f1() {
+  let n = 5;
+  if (true) {
+    let n = 10;
+  }
+  console.log(n); // 5
+}
+```
+
+上面的函数有两个代码块，都声明了变量`n`，运行后输出 5。这表示外层代码块不受内层代码块的影响。如果两次都使用`var`定义变量`n`，最后输出的值才是 10。
+
+`ES6` 允许块级作用域的任意嵌套。
+
+```javascript
+{{{{
+  {let insane = 'Hello World'}
+  console.log(insane); // 报错
+}}}};
+```
+
+上面代码使用了一个五层的块级作用域，每一层都是一个单独的作用域。第四层作用域无法读取第五层作用域的内部变量。
+
+##### 块级作用域与函数声明
+
+函数能不能在块级作用域之中声明？这是一个相当令人混淆的问题。
+
+`ES5` 规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
+
+```javascript
+// 情况一
+if (true) {
+  function f() {}
+}
+
+// 情况二
+try {
+  function f() {}
+} catch(e) {
+  // ...
+}
+```
+
+上面两种函数声明，根据 `ES5` 的规定都是非法的。
+
+**但是!!**，浏览器没有遵守这个规定，为了兼容以前的旧代码，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。
+
+所以`ES6` 在[附录 B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
+
+- 允许在块级作用域内声明函数。
+- 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
+- 同时，函数声明还会提升到所在的块级作用域的头部。
+
+### const
+
+#### 基本用法
+
+`const`声明一个只读的常量。一旦声明，常量的值就不能改变。常亮的变量名通常全是大写字母。
+
+```javascript
+const PI = 3.1415;
+PI // 3.1415
+
+PI = 3;
+// TypeError: Assignment to constant variable.
+```
+
+上面代码表明改变常量的值会报错。
+
+`const`声明的变量不得改变值，这意味着，`const`一旦声明变量，就必须立即初始化，不能留到以后赋值。
+
+```javascript
+const foo;
+// SyntaxError: Missing initializer in const declaration
+```
+
+`const`的作用域与`let`命令相同：只在声明所在的块级作用域内有效。
+
+```javascript
+if (true) {
+  const MAX = 5;
+}
+
+MAX // Uncaught ReferenceError: MAX is not defined
+```
+
+同时，`const`与`let`一样，也存在**暂时性死区**和**不可重复声明**
+
+#### 本质 
+
+`const`实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动。对于简单类型的数据（数值、字符串、布尔值），值就保存在变量指向的那个内存地址，因此等同于常量。但对于复合类型的数据（主要是对象和数组），变量指向的内存地址，保存的只是一个指向实际数据的指针，`const`只能保证这个指针是固定的（即总是指向另一个固定的地址），至于它指向的数据结构是不是可变的，就完全不能控制了。因此，将一个对象声明为常量必须非常小心。
+
+```javascript
+const foo = {};
+
+// 为 foo 添加一个属性，可以成功
+foo.prop = 123;
+foo.prop // 123
+
+// 将 foo 指向另一个对象，就会报错
+foo = {}; // TypeError: "foo" is read-only
+```
+
+上面代码中，常量`foo`储存的是一个地址，这个地址指向一个对象。不可变的只是这个地址，即不能把`foo`指向另一个地址，但对象本身是可变的，所以依然可以为其添加新属性。
+
+下面是另一个例子。
+
+```javascript
+const a = [];
+a.push('Hello'); // 可执行
+a.length = 0;    // 可执行
+a = ['Dave'];    // 报错
+```
+
+上面代码中，常量`a`是一个数组，这个数组本身是可写的，但是如果将另一个数组赋值给`a`，就会报错。
+
+如果真的想将对象冻结，应该使用`Object.freeze`方法。
+
+```javascript
+const foo = Object.freeze({});
+
+// 常规模式时，下面一行不起作用；
+// 严格模式时，该行会报错
+foo.prop = 123;
+```
+
+### ES6 声明变量的六种方法
+
+ES5 只有两种声明变量的方法：`var`命令和`function`命令。
+
+ES6 新增了以下四种方式：
+
+- `let`
+- `const`
+- `import`
+- `class`
+
+### 顶层对象的属性
+
+顶层对象，在浏览器环境指的是`window`对象，在 Node 指的是`global`对象。ES5 之中，顶层对象的属性与全局变量是等价的。
+
+```javascript
+window.a = 1;
+a // 1
+
+a = 2;
+window.a // 2
+```
+
+上面代码中，顶层对象的属性赋值与全局变量的赋值，是同一件事。
+
+顶层对象的属性与全局变量挂钩，被认为是 JavaScript 语言最大的设计败笔之一。这样的设计带来了几个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道（因为全局变量可能是顶层对象的属性创造的，而属性的创造是动态的）；其次，程序员很容易不知不觉地就创建了全局变量（比如打字出错）；最后，顶层对象的属性是到处可以读写的，这非常不利于模块化编程。另一方面，`window`对象有实体含义，指的是浏览器的窗口对象，顶层对象是一个有实体含义的对象，也是不合适的。
+
+ES6 为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是顶层对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于顶层对象的属性。也就是说，从 ES6 开始，全局变量将逐步与顶层对象的属性脱钩。
+
+```javascript
+var a = 1;
+// 如果在 Node 的 REPL 环境，可以写成 global.a
+// 或者采用通用方法，写成 this.a
+window.a // 1
+
+let b = 1;
+window.b // undefined
+```
+
+上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
+
+### globalThis 对象
+
+JavaScript 语言存在一个顶层对象，它提供全局环境（即全局作用域），所有代码都是在这个环境中运行。但是，顶层对象在各种实现里面是不统一的。
+
+- 浏览器里面，顶层对象是`window`，但 Node 和 Web Worker 没有`window`。
+- 浏览器和 Web Worker 里面，`self`也指向顶层对象，但是 Node 没有`self`。
+- Node 里面，顶层对象是`global`，但其他环境都不支持。
+
+同一段代码为了能够在各种环境，都能取到顶层对象，现在一般是使用`this`变量，但是有局限性。
+
+- 全局环境中，`this`会返回顶层对象。但是，Node 模块和 ES6 模块中，`this`返回的是当前模块。
+- 函数里面的`this`，如果函数不是作为对象的方法运行，而是单纯作为函数运行，`this`会指向顶层对象。但是，严格模式下，这时`this`会返回`undefined`。
+- 不管是严格模式，还是普通模式，`new Function('return this')()`，总是会返回全局对象。但是，如果浏览器用了 CSP（Content Security Policy，内容安全策略），那么`eval`、`new Function`这些方法都可能无法使用。
+
+综上所述，很难找到一种方法，可以在所有情况下，都取到顶层对象。下面是两种勉强可以使用的方法。
+
+```javascript
+// 方法一
+(typeof window !== 'undefined'
+   ? window
+   : (typeof process === 'object' &&
+      typeof require === 'function' &&
+      typeof global === 'object')
+     ? global
+     : this);
+
+// 方法二
+var getGlobal = function () {
+  if (typeof self !== 'undefined') { return self; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  throw new Error('unable to locate global object');
+};
+```
+
+## 变量的解构赋值
+
+### 数组的解构赋值
+
+#### 基本用法
+
+ES6 允许按照一定模式，从数组和对象中提取值，对变量进行赋值，这被称为解构（Destructuring）。
+
+以前，为变量赋值，只能直接指定值。
+
+```javascript
+let a = 1;
+let b = 2;
+let c = 3;
+```
+
+ES6 允许写成下面这样。
+
+```javascript
+let [a, b, c] = [1, 2, 3];
+```
+
+本质上，这种写法属于“模式匹配”，只要等号两边的模式相同，左边的变量就会被赋予对应的值。下面是一些使用嵌套数组进行解构的例子。
+
+```javascript
+let [foo, [[bar], baz]] = [1, [[2], 3]];
+foo // 1
+bar // 2
+baz // 3
+
+let [ , , third] = ["foo", "bar", "baz"];
+third // "baz"
+
+let [x, , y] = [1, 2, 3];
+x // 1
+y // 3
+
+let [head, ...tail] = [1, 2, 3, 4];
+head // 1
+tail // [2, 3, 4]
+
+let [x, y, ...z] = ['a'];
+x // "a"
+y // undefined
+z // []
+```
+
+如果解构不成功，变量的值就等于`undefined`。
+
+```javascript
+let [foo] = [];
+let [bar, foo] = [1];
+```
+
+以上两种情况都属于解构不成功，`foo`的值都会等于`undefined`。
+
+另一种情况是不完全解构，即等号左边的模式，只匹配一部分的等号右边的数组。这种情况下，解构依然可以成功。
+
+```javascript
+let [x, y] = [1, 2, 3];
+x // 1
+y // 2
+
+let [a, [b], d] = [1, [2, 3], 4];
+a // 1
+b // 2
+d // 4
+```
+
+#### 默认值
+
+解构赋值允许指定默认值。
+
+```javascript
+let [foo = true] = [];
+foo // true
+
+let [x, y = 'b'] = ['a']; // x='a', y='b'
+let [x, y = 'b'] = ['a', undefined]; // x='a', y='b'
+```
+
+注意，ES6 内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，只有当一个数组成员严格等于`undefined`，默认值才会生效。
+
+```javascript
+let [x = 1] = [undefined];
+x // 1
+
+let [x = 1] = [null];
+x // null
+```
+
+上面代码中，如果一个数组成员是`null`，默认值就不会生效，因为`null`不严格等于`undefined`。
+
+默认值可以引用解构赋值的其他变量，但该变量必须已经声明。
+
+```javascript
+let [x = 1, y = x] = [];     // x=1; y=1
+let [x = 1, y = x] = [2];    // x=2; y=2
+let [x = 1, y = x] = [1, 2]; // x=1; y=2
+let [x = y, y = 1] = [];     // ReferenceError: y is not defined
+```
+
+上面最后一个表达式之所以会报错，是因为`x`用`y`做默认值时，`y`还没有声明。
+
+### 对象的解构赋值
+
+#### 基本用法
+
+解构不仅可以用于数组，还可以用于对象。
+
+```javascript
+let { foo, bar } = { foo: 'aaa', bar: 'bbb' };
+foo // "aaa"
+bar // "bbb"
+```
+
+对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。
+
+```javascript
+let { bar, foo } = { foo: 'aaa', bar: 'bbb' };
+foo // "aaa"
+bar // "bbb"
+
+let { baz } = { foo: 'aaa', bar: 'bbb' };
+baz // undefined
+```
+
+上面代码的第一个例子，等号左边的两个变量的次序，与等号右边两个同名属性的次序不一致，但是对取值完全没有影响。第二个例子的变量没有对应的同名属性，导致取不到值，最后等于`undefined`。
+
+如果解构失败，变量的值等于`undefined`。
+
+```javascript
+let {foo} = {bar: 'baz'};
+foo // undefined
+```
+
+#### 解构重命名
+
+我们可以把解构出来的变量名重新起个名
+
+```javascript
+let { foo: baz } = { foo: 'aaa', bar: 'bbb' };
+baz // "aaa"
+
+let obj = { first: 'hello', last: 'world' };
+let { first: f, last: l } = obj;
+f // 'hello'
+l // 'world'
+```
+
+上面第一个例子，我们把`foo`解构出来以后，重新命名为`baz`，所以`baz`的值等于`"aaa"`
+
+注意，对象的解构赋值可以取到继承的属性。
+
+```javascript
+const obj1 = {};
+const obj2 = { foo: 'bar' };
+Object.setPrototypeOf(obj1, obj2);
+
+const { foo } = obj1;
+foo // "bar"
+```
+
+上面代码中，对象`obj1`的原型对象是`obj2`。`foo`属性不是`obj1`自身的属性，而是继承自`obj2`的属性，解构赋值可以取到这个属性。
+
+#### 默认值
+
+对象的解构也可以指定默认值。
+
+```javascript
+var {x = 3} = {};
+x // 3
+
+var {x, y = 5} = {x: 1};
+x // 1
+y // 5
+
+var {x: y = 3} = {};
+y // 3
+
+var {x: y = 3} = {x: 5};
+y // 5
+
+var { message: msg = 'Something went wrong' } = {};
+msg // "Something went wrong"
+```
+
+默认值生效的条件是，对象的属性值严格等于`undefined`。
+
+```javascript
+var {x = 3} = {x: undefined};
+x // 3
+
+var {x = 3} = {x: null};
+x // null
+```
+
+上面代码中，属性`x`等于`null`，因为`null`与`undefined`不严格相等，所以是个有效的赋值，导致默认值`3`不会生效。
+
+#### 注意点
+
+1. 如果要将一个已经声明的变量用于解构赋值，必须非常小心。
+
+```javascript
+// 错误的写法
+let x;
+{x} = {x: 1};
+// SyntaxError: syntax error
+```
+
+上面代码的写法会报错，因为 JavaScript 引擎会将`{x}`理解成一个代码块，从而发生语法错误。只有不将大括号写在行首，避免 JavaScript 将其解释为代码块，才能解决这个问题。
+
+```javascript
+// 正确的写法
+let x;
+({x} = {x: 1});
+```
+
+上面代码将整个解构赋值语句，放在一个圆括号里面，就可以正确执行。关于圆括号与解构赋值的关系，参见下文。
+
+2. 解构赋值允许等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
+
+```javascript
+({} = [true, false]);
+({} = 'abc');
+({} = []);
+```
+
+上面的表达式虽然毫无意义，但是语法是合法的，可以执行。
+
+3. 由于数组本质是特殊的对象，因此可以对数组进行对象属性的解构。
+
+```javascript
+let arr = [1, 2, 3];
+let {0 : first, [arr.length - 1] : last} = arr;
+first // 1
+last // 3
+```
+
+上面代码对数组进行对象解构。数组`arr`的`0`键对应的值是`1`，`[arr.length - 1]`就是`2`键，对应的值是`3`
+
+### 字符串的解构赋值
+
+字符串也可以解构赋值。这是因为此时，字符串被转换成了一个类似数组的对象。
+
+```javascript
+const [a, b, c, d, e] = 'hello';
+a // "h"
+b // "e"
+c // "l"
+d // "l"
+e // "o"
+```
+
+类似数组的对象都有一个`length`属性，因此还可以对这个属性解构赋值。
+
+```javascript
+let {length : len} = 'hello';
+len // 5
+```
+
+### 数值和布尔值的解构赋值
+
+解构赋值时，如果等号右边是数值和布尔值，则会先转为对象。
+
+```javascript
+let {toString: s} = 123;
+s === Number.prototype.toString // true
+
+let {toString: s} = true;
+s === Boolean.prototype.toString // true
+```
+
+上面代码中，数值和布尔值的包装对象都有`toString`属性，因此变量`s`都能取到值。
+
+解构赋值的规则是，只要等号右边的值不是对象或数组，就先将其转为对象。由于`undefined`和`null`无法转为对象，所以对它们进行解构赋值，都会报错。
+
+```javascript
+let { prop: x } = undefined; // TypeError
+let { prop: y } = null; // TypeError
+```
+
+### 函数参数的解构赋值
+
+函数的参数也可以使用解构赋值。
+
+```javascript
+function add([x, y]){
+  return x + y;
+}
+
+add([1, 2]); // 3
+```
+
+上面代码中，函数`add`的参数表面上是一个数组，但在传入参数的那一刻，数组参数就被解构成变量`x`和`y`。对于函数内部的代码来说，它们能感受到的参数就是`x`和`y`。
+
+下面是另一个例子。
+
+```javascript
+[[1, 2], [3, 4]].map(([a, b]) => a + b);
+// [ 3, 7 ]
+```
+
+函数参数的解构也可以使用默认值。
+
+```javascript
+function move({x = 0, y = 0} = {}) {
+  return [x, y];
+}
+
+move({x: 3, y: 8}); // [3, 8]
+move({x: 3}); // [3, 0]
+move({}); // [0, 0]
+move(); // [0, 0]
+```
+
+上面代码中，函数`move`的参数是一个对象，通过对这个对象进行解构，得到变量`x`和`y`的值。如果解构失败，`x`和`y`等于默认值。
+
+### 用途 
+
+变量的解构赋值用途很多。
+
+1. 交换变量的值
+
+```javascript
+let x = 1;
+let y = 2;
+
+[x, y] = [y, x];
+```
+
+上面代码交换变量`x`和`y`的值，这样的写法不仅简洁，而且易读，语义非常清晰。
+
+2. 从函数返回多个值
+
+函数只能返回一个值，如果要返回多个值，只能将它们放在数组或对象里返回。有了解构赋值，取出这些值就非常方便。
+
+```javascript
+// 返回一个数组
+
+function example() {
+  return [1, 2, 3];
+}
+let [a, b, c] = example();
+
+// 返回一个对象
+
+function example() {
+  return {
+    foo: 1,
+    bar: 2
+  };
+}
+let { foo, bar } = example();
+```
+
+3. 提取 JSON 数据
+
+解构赋值对提取 JSON 对象中的数据，尤其有用。
+
+```javascript
+let jsonData = {
+  id: 42,
+  status: "OK",
+  data: [867, 5309]
+};
+
+let { id, status, data: number } = jsonData;
+
+console.log(id, status, number);
+// 42, "OK", [867, 5309]
+```
+
+4. 函数参数的默认值
+
+```javascript
+jQuery.ajax = function (url, {
+  async = true,
+  beforeSend = function () {},
+  cache = true,
+  complete = function () {},
+  crossDomain = false,
+  global = true,
+  // ... more config
+} = {}) {
+  // ... do stuff
+};
+```
+
+指定参数的默认值，就避免了在函数体内部再写`var foo = config.foo || 'default foo';`这样的语句。
+
+5. 输入模块的指定方法
+
+加载模块时，往往需要指定输入哪些方法。解构赋值使得输入语句非常清晰。
+
+```javascript
+const { SourceMapConsumer, SourceNode } = require("source-map");
+```
+
+6. 遍历 Map 结构
+
+任何部署了 Iterator 接口的对象，都可以用`for...of`循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。
+
+```javascript
+const map = new Map();
+map.set('first', 'hello');
+map.set('second', 'world');
+
+for (let [key, value] of map) {
+  console.log(key + " is " + value);
+}
+// first is hello
+// second is world
+```
+
+如果只想获取键名，或者只想获取键值，可以写成下面这样。
+
+```javascript
+// 获取键名
+for (let [key] of map) {
+  // ...
+}
+
+// 获取键值
+for (let [,value] of map) {
+  // ...
+}
+```
+
+## Promise
 
 ### 什么是 Promise？
 

@@ -1,16 +1,20 @@
 {
-  "name": "vuepress",
-  "version": "1.0.0",
-  "description": "",
+  "name": "fe-note",
+  "version": "1.2.0",
+  "description": "记录自己在前端学习的过程中的点点滴滴",
   "main": "index.js",
   "scripts": {
-	"docs:build": "vuepress build docs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docs:build": "vuepress build docs",
+    "docs:dev": "vuepress dev docs"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "note",
+    "interview"
+  ],
   "license": "ISC",
+  "author": "bingkelele007@163.com",
   "devDependencies": {
-    "@vuepress/plugin-back-to-top": "^1.4.0"
+    "@vuepress/plugin-back-to-top": "^1.4.0",
+    "vuepress": "^1.4.0"
   }
 }
