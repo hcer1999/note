@@ -1,6 +1,6 @@
 {
   "name": "fe-note",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "记录自己在前端学习的过程中的点点滴滴",
   "main": "index.js",
   "scripts": {

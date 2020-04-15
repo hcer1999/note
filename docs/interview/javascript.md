@@ -61,7 +61,49 @@ ES6是JS发展史上最重要的一个版本之一，因为他发布了很多的
 
 ## 三. for-of 有什么特点
 
-    for-of 可以遍历除对象以外的所有类型数据，包括字符串，数组，`nodelist` 等。
+for-of语句在**可迭代对象**（包括 `Array`，`Map`，`Set`，`String`，`TypedArray`，`arguments` 对象等等）上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句
+
+```js
+const array1 = ['a', 'b', 'c'];
+for (const element of array1) {
+  console.log(element);
+}
+// "a"
+// "b"
+// "c"
+```
+
+### for...of与for...in的区别
+
+无论是`for...in`还是`for...of`语句都是迭代一些东西。它们之间的主要区别在于它们的迭代方式。
+
+`for-in`语句以任意顺序迭代对象的**可枚举属性**。
+
+`for-of` 语句遍历**可迭代对象**定义要迭代的数据。
+
+```js
+Object.prototype.objCustom = function() {}; 
+Array.prototype.arrCustom = function() {};
+let iterable = [3, 5, 7];
+iterable.foo = 'hello';
+
+for (let i in iterable) {
+  console.log(i); 
+    // 0, 1, 2, "foo", "arrCustom", "objCustom"
+}
+
+for (let i in iterable) {
+  if (iterable.hasOwnProperty(i)) {
+    console.log(i); 
+    // 0, 1, 2, "foo"
+  }
+}
+
+for (let i of iterable) {
+  console.log(i); 
+  // 3, 5, 7
+}
+```
 
 ## 四. 对 Promise 的理解
 
@@ -146,7 +188,7 @@ ES6是JS发展史上最重要的一个版本之一，因为他发布了很多的
 
 ## 六. 说说函数防抖和函数节流
 
-**防抖**
+#### 防抖
 
 即如果瞬间触发多次一个函数，我们只响应最后一次触发。效果类似搜索引擎的搜索联想功能，如果一次性输入很多文本，我们只需要响应最后一次输入即可。
 
@@ -209,7 +251,7 @@ _.debounce = function(func, wait, immediate) {
 
 :::
 
-**节流**
+#### 节流
 
 防抖和节流本质是不一样的。防抖是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行
 
@@ -331,11 +373,11 @@ _.throttle = function(func, wait, options) {
 
 - 为什么会出现跨域？
 
-  > 首先了解下浏览器的同源策略 同源策略 SOP（Same origin policy）是一种约定，由 Netscape 公司 1995 年引入浏览器，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到 XSS、CSFR 等攻击。所谓同源是指"**协议**+**域名**+**端口**"三者相同，即便两个不同的域名指向同一个 ip 地址，也非同源
+> 首先了解下浏览器的同源策略 同源策略 SOP（Same origin policy）是一种约定，由 Netscape 公司 1995 年引入浏览器，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到 XSS、CSFR 等攻击。所谓同源是指"**协议**+**域名**+**端口**"三者相同，即便两个不同的域名指向同一个 ip 地址，也非同源
 
 - 什么是 CORS?
 
-  > CORS 是一个 W3C 标准，全称是"跨域资源共享"（Cross-origin resource sharing）。 它允许浏览器向跨源服务器，发出 XMLHttpRequest 请求,从而克服了 AJAX 只能同源使用的限制。
+> CORS 是一个 W3C 标准，全称是"跨域资源共享"（Cross-origin resource sharing）。 它允许浏览器向跨源服务器，发出 XMLHttpRequest 请求,从而克服了 AJAX 只能同源使用的限制。
 
 **解决办法**
 
@@ -404,7 +446,7 @@ _.throttle = function(func, wait, options) {
 2. 马上调用这个函数
 
 ```js
-;(function() {
+(function() {
   alert('我是匿名函数')
 })()
 ```
@@ -414,7 +456,7 @@ _.throttle = function(func, wait, options) {
 - 首先声明一个匿名函数 `function(){alert('我是匿名函数')}`。
 - 然后在匿名函数后面接一对括号 ()，调用这个匿名函数。
 
-**立即执行函数有什么用**
+**立即执行函数有什么用?**
 
 只有一个作用：创建一个独立的作用域。这个作用域里面的变量，外面访问不到（即避免`变量污染`）。
 
@@ -1001,3 +1043,39 @@ var f1 = new f("martin");
 console.log(f1 instanceof f); //true
 ```
 
+## 二十八. JS 垃圾回收机制
+
+JS中有一些变量可能在执行完后就不会再用到了，所以JS引擎的垃圾回收机制就会对这些不再用到的变量进行清理，节约资源的目的。
+
+但是，如果一个值不再需要了，引用数却不为`0`，垃圾回收机制无法释放这块内存，从而导致**内存泄漏**。
+
+```javascript
+const arr = [1, 2, 3, 4];
+console.log('hello world');
+```
+
+上面代码中，数组`[1, 2, 3, 4]`是一个值，会占用内存。变量`arr`是仅有的对这个值的引用，因此引用次数为`1`。尽管后面的代码没有用到`arr`，它还是会持续占用内存。
+
+如果增加一行代码，解除`arr`对`[1, 2, 3, 4]`引用，这块内存就可以被垃圾回收机制释放了。
+
+```javascript
+let arr = [1, 2, 3, 4];
+console.log('hello world');
+arr = null;
+```
+
+上面代码中，`arr`重置为`null`，就解除了对`[1, 2, 3, 4]`的引用，引用次数变成了`0`，内存就可以释放出来了。
+
+## 二十九. Eventloop 说一下
+
+主线程从**任务队列**中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为`Event Loop`（事件循环）。
+
+主线程运行的时候，产生堆（`heap`）和栈（`stack`），栈中的代码调用各种外部API，它们在**任务队列**中加入各种事件（`click`，`load`，`done`）。只要栈中的代码执行完毕，主线程就会去读取"任务队列"，依次执行那些事件所对应的回调函数。
+
+## 三十. 为什么JavaScript是单线程？
+
+`JavaScript`的单线程，与它的用途有关。作为浏览器脚本语言，`JavaScript`的主要用途是与用户互动，以及操作`DOM`。这决定了它只能是单线程，否则会带来很复杂的同步问题。
+
+比如，假定`JavaScript`同时有两个线程，一个线程在某个`DOM`节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？
+
+所以，为了避免复杂性，从一诞生，`JavaScript`就是单线程，这已经成了这门语言的核心特征，将来也不会改变。
