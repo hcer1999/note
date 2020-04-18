@@ -996,3 +996,235 @@ HTML5标准规定了setTimeout()的第二个参数的最小值（最短间隔）
 :::
 
 > 本篇参考:[JavaScript 运行机制详解](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)
+
+## JS中的原型链
+
+js中有对象，例如
+
+```js
+var obj = { name: '张三' }
+```
+
+我们可以对obj进行一些操作，包括
+
+- 「读」属性
+- 「新增」属性
+- 「更新」属性
+- 「删除」属性
+
+下面我们主要来看一下「读」和「新增」属性。
+
+#### 为什么会有valueOf / toString 属性呢？
+
+我们在没有对obj进行任何其他操作之前，发现obj中已经有几个属性(方法)了：
+
+![Markdown](http://cdn.wcnm.kim/FsDHRbrABa373HfHotYlhzGhAfcw)
+
+**那么问题来了：`valueOf` / `toString` / `constructor` 是怎么来？我们并没有给 `obj.valueOf` 赋值呀。**
+
+要搞清楚 `valueOf` / `toString` / `constructor` 是怎么来的，我们用 `console.dir` 打印一下。
+
+![Markdown](http://cdn.wcnm.kim/FrDgaBD36IcxIkgLt92_dZcnc1GN)
+
+我们发现 `console.dir(obj)` 打出来的结果是：
+
+1. `obj` 本身有一个属性 `name`（这是我们给它加的）
+
+2. `obj` 还有一个属性叫做 `__proto__`（它是一个对象）
+
+3. `obj.__proto__` 有很多属性，包括 `valueOf`、`toString`、`constructor` 等
+
+4. `obj.__proto__` 其实也有一个叫做 `__proto__ `的属性（console.log 没有显示），值为 `null`
+
+现在回到我们的问题：`obj` 为什么会拥有 `valueOf` / `toString` / `constructor` 这几个属性？
+
+**答案：**
+
+这跟 `__proto__ `有关。
+
+当我们「读取」 `obj.toString` 时，JS 引擎会做下面的事情：
+
+1. 看看 `obj` 对象本身有没有 `toString` 属性。没有就走到下一步。
+
+2. 看看 `obj.__proto__` 对象有没有 `toString` 属性，发现 `obj.__proto__` 有 `toString` 属性，于是找到了
+
+   所以 `obj.toString` 实际上就是第 2 步中找到的 `obj.__proto__.toString`。
+
+   可以想象，
+
+3. 如果 `obj.__proto__` 没有，那么浏览器会继续查看 `obj.__proto__.__proto__`
+
+4. 如果 `obj.__proto__.__proto`__ 也没有，那么浏览器会继续查看 `obj.__proto__.__proto__.__proto__`
+
+5. 直到找到 `toString` 或者 `__proto__`为 `null`。
+
+上面的过程，就是「读」属性的「搜索过程」。
+
+而这个「搜索过程」，是连着由 `__proto__` 组成的链子一直走的。
+
+**这个链子，就叫做「原型链」。**
+
+
+
+#### **共享原型链**
+
+现在我们有另一个对象
+
+```js
+var obj2 = { name: 'obj2' }
+```
+
+`obj.toString` 和 `obj2.toString` 其实是同一个东西，也就是 `obj2.__proto__.toString`。
+
+这有什么意义呢？
+
+如果我们改写 `obj2.__proto__.toString`，那么 `obj.toString` 其实也会变！
+
+这样 `obj` 和 `obj2` 就是具有某些相同行为的对象，这就是意义所在。
+
+
+
+#### **差异化**
+
+如果我们想让 `obj.toString` 和 `obj2.toString` 的行为不同怎么做呢？
+
+直接赋值就好了：
+
+```js
+obj.toString = function(){ return '新的 toString 方法' }
+```
+
+#### 总结
+
+「读」属性时会**沿着原型链搜索**。
+
+「新增」属性时**不会**去看原型链
+
+
+
+> 参考链接：[https://zhuanlan.zhihu.com/p/23090041](https://zhuanlan.zhihu.com/p/23090041)
+
+## JS中的new有什么用？
+
+大部分讲 new 的文章会从面向对象的思路讲起，但是我始终认为，在解释一个事物的时候，不应该引入另一个更复杂的事物。
+
+今天我从「省代码」的角度来讲 new。
+
+----
+
+想象我们在制作一个策略类战争游戏，玩家可以操作一堆士兵攻击敌方。
+
+我们着重来研究一下这个游戏里面的「制造士兵」环节。
+
+一个士兵的在计算机里就是一堆属性，如下图：
+
+![Markdown](http://cdn.wcnm.kim/FijrWxjaoLwt7reStY3-WH43tTSP)
+
+我们只需要这样就可以制造一个士兵：
+
+```js
+var 士兵 = {
+  ID: 1, // 用于区分每个士兵
+  兵种:"美国大兵",
+  攻击力:5,
+  生命值:42, 
+  行走:function(){ /*走俩步的代码*/},
+  奔跑:function(){ /*狂奔的代码*/  },
+  死亡:function(){ /*Go die*/    },
+  攻击:function(){ /*糊他熊脸*/   },
+  防御:function(){ /*护脸*/       }
+}
+
+兵营.制造(士兵)
+```
+
+制造一百个士兵
+
+如果需要制造100个士兵怎么办呢？
+
+循环100次？
+
+当然不！因为这样浪费了很多内存，也不符合程序员思维。
+
+### 分析
+
+1. 行走、奔跑、死亡、攻击、防御这五个动作对于每个士兵其实是一样的，只需要各自引用同一个函数就可以了，没必要重复创建 100 个行走、100个奔跑……
+2. 这些士兵的兵种和攻击力都是一样的，没必要创建 100 次。
+3. 只有 ID 和生命值需要创建 100 次，因为每个士兵有自己的 ID 和生命值。
+
+### 改进
+
+我们可以使用`new`关键字，可以让我们少些很多行代码：
+
+```js
+function 士兵(ID){
+  this.ID = ID
+  this.生命值 = 42
+}
+
+士兵.prototype = {
+  兵种:"美国大兵",
+  攻击力:5,
+  行走:function(){ /*走俩步的代码*/},
+  奔跑:function(){ /*狂奔的代码*/  },
+  死亡:function(){ /*Go die*/    },
+  攻击:function(){ /*糊他熊脸*/   },
+  防御:function(){ /*护脸*/       }
+}
+
+// 保存为文件：士兵.js
+```
+
+然后是创建士兵（加了一个 `new` 关键字）：
+
+```js
+var 士兵们 = []
+for(var i=0; i<100; i++){
+  士兵们.push(new 士兵(i))
+}
+
+兵营.批量制造(士兵们)
+```
+
+**new 的作用，就是省那么几行代码。（也就是所谓的语法糖）**
+
+### 注意 constructor 属性
+
+`new` 操作为了记录「临时对象是由哪个函数创建的」，所以预先给「`士兵.prototype`」加了一个 `constructor` 属性：
+
+```js
+士兵.prototype = {
+  constructor: 士兵
+}
+```
+
+如果你重新对「士兵.prototype」赋值，那么这个 `constructor` 属性就没了，所以你应该这么写：
+
+```js
+士兵.prototype.兵种 = "美国大兵"
+士兵.prototype.攻击力 = 5
+士兵.prototype.行走 = function(){ /*走俩步的代码*/}
+士兵.prototype.奔跑 = function(){ /*狂奔的代码*/  }
+士兵.prototype.死亡 = function(){ /*Go die*/    }
+士兵.prototype.攻击 = function(){ /*糊他熊脸*/   }
+士兵.prototype.防御 = function(){ /*护脸*/       }
+```
+
+或者你也可以自己给 `constructor` 重新赋值：
+
+```js
+士兵.prototype = {
+  constructor: 士兵,
+  兵种:"美国大兵",
+  攻击力:5,
+  行走:function(){ /*走俩步的代码*/},
+  奔跑:function(){ /*狂奔的代码*/  },
+  死亡:function(){ /*Go die*/    },
+  攻击:function(){ /*糊他熊脸*/   },
+  防御:function(){ /*护脸*/       }
+}
+```
+
+
+
+> 参考： [https://zhuanlan.zhihu.com/p/23987456](https://zhuanlan.zhihu.com/p/23987456)

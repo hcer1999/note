@@ -47,6 +47,11 @@ module.exports = {
       collapsable: true,
       children: ['/interview/javascript']
     },
+	{
+      title: 'Vue篇',
+      collapsable: true,
+      children: ['/interview/vue']
+    },
     {
       title: 'DOM篇',
       collapsable: true,
