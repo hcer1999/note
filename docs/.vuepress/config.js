@@ -1,4 +1,4 @@
-﻿module.exports = {
+module.exports = {
   title: '冰可乐的前端笔记',
   description: '路漫漫其修远兮,吾将上下而求索',
   plugins: require('./plugins'),
@@ -6,7 +6,7 @@
   port: '7777',
   head: [
     ['link', { rel: 'icon', href: '/img/favicon.ico' }],
-    ['link', { rel: 'stylesheet', href: '/style/main.css' }],
+    ['link', { rel: 'stylesheet', href: '/style/main.css' }]
   ],
   markdown: {
     // lineNumbers: false,

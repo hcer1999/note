@@ -1,5 +1,6 @@
 # JavaScript
-
+目录
+[[toc]]
 ## 组成部分
 
 - ECMAscript（核心）
