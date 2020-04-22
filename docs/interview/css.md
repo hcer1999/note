@@ -354,3 +354,93 @@ html {font-size: 62.5%;  } /*  公式16px*62.5%=10px  */
 
 - `Flash Of Unstyled Content`：用户定义样式表加载之前浏览器使用默认样式显示文档，用户样式加载渲染之后再从新显示文档，造成页面闪烁。
 - **解决方法**：把样式表放到文档的`head`
+
+## 二十二. position有哪几个属性，分别有什么用？
+
+- **static(默认值)**
+
+  默认的属性，指定元素使用正常的布局行为，即元素在文档常规流中当前的布局位置。此时 `top`, `right`, `bottom`, `left` 和 `z-index `属性无效。
+
+- **relative(相对定位)**
+
+  元素先放置在未添加定位时的位置，再在不改变页面布局的前提下调整元素位置。元素会以自身为定位，可以对它设置`top`，`right`，`bottom`，`left`值
+
+- **absolute(绝对定位)**
+
+  元素会被移出正常文档流，并不为元素预留空间，通过指定元素相对于最近的非 static 定位祖先元素的偏移，来确定元素位置。绝对定位的元素可以设置外边距（margins），且不会与其他边距合并。
+
+- **fixed(固定定位)**
+
+  元素会被移出正常文档流，并不为元素预留空间，而是通过指定元素相对于屏幕视口（viewport）的位置来指定元素位置。元素的位置在屏幕滚动时不会改变。打印时，元素会出现在的每页的固定位置。
+
+- **sticky(粘性定位)**
+
+  元素根据正常文档流进行定位，然后相对它的最近滚动祖先和 最近块级祖先，基于`top`, `right`, `bottom`, 和`left`的值进行偏移。
+
+## 二十三. 父盒子中子盒子浮动有什么后果？
+
+如果父盒子的高度低于子盒子的高度或者父盒子没有高度的话，会造成**高度塌陷**。
+
+示例
+
+```html
+<div class="pic-box">
+    <div class="container">
+        <img class="pic-1" src="img1.jpg">
+        <img class="pic-2" src="img2.jpg">
+        <img class="pic-3" src="img3.jpg">
+    </div>
+</div>
+```
+
+由于我们没给父盒子设置高度，所以父盒子的高度是由图片撑开的。
+
+![未浮动](https://img-blog.csdn.net/20170519142404832?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzE5MTU3NDU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+如果我们让img3浮动的话，会变成这样。
+
+![浮动](https://img-blog.csdn.net/20170519142445808?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvcXFfMzE5MTU3NDU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+如果要解决高度塌陷，则需要**清除浮动**。
+
+## 二十四. HTML行内元素、块状元素、行内块状元素的区别
+
+### 行内元素
+
+代表标签：`span`、`b`、`i`
+
+行内元素特征：
+
+- 设置宽高无效
+- 不会自动进行换行
+- 对`margin`仅设置左右方向有效，上下无效
+- 对`padding`设置上下左右都有效
+
+### 块元素
+
+代表标签：`div`、`p`、`nav`、`aside`、`header`、`footer`、`section`、`article`、`ul-li`、`address`
+
+块状元素特征：
+
+- 能够识别宽高
+- 对`margin`和`padding`的设置上下左右均对其有效
+- 可以自动换行
+- 多个块状元素标签写在一起，默认排列方式为从上至下
+
+### 行内块元素
+
+行内块状元素综合了行内元素和块状元素的特性，但是各有取舍。因此行内块状元素在日常的使用中，由于其特性，使用的次数也比较多。
+
+行内块状元素特征：
+
+- 不自动换行
+- 能够识别宽高
+- 默认排列方式为从左到右
+
+## 二十五. 行内元素、行内块元素的默认间隙问题
+
+1. 将所有的行内块元素直接设置浮动，个人认为最直接的方法，当然是在适当的场景中，因为过度的浮动会产生需要清除浮动的必要
+2. 在产生边距的行内块的父元素设置属性：font-size：0px;
+3. 在父元素上设置，word-spacing(词边距)的值设为合适的负值即可
+4. 在html中将行内块元素在同一行显示，不要进行美观缩进或者换行
+   

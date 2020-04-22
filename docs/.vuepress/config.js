@@ -1,6 +1,7 @@
 module.exports = {
   title: '冰可乐的前端笔记',
   description: '路漫漫其修远兮,吾将上下而求索',
+  lang: 'zh-CN',
   plugins: require('./plugins'),
   dest: './dist',
   port: '7777',
