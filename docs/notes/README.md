@@ -12,6 +12,8 @@
 
 ### [数据库 笔记](/notes/sql.html)
 
+### [Git工具 笔记](/notes/git.html)
+
 
 
 ::: tip 声明

@@ -29,6 +29,11 @@ module.exports = {
       title: '数据库笔记',
       collapsable: true,
       children: ['/notes/sql']
+    },
+    {
+      title: 'Git工具笔记',
+      collapsable: true,
+      children: ['/notes/git']
     }
   ],
   '/interview/': [
