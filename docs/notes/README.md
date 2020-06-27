@@ -14,6 +14,8 @@
 
 ### [Git工具 笔记](/notes/git.html)
 
+### [WebStorm快捷键大全](/notes/webstormkeys.html)
+
 
 
 ::: tip 声明
