@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: http://q.qlogo.cn/headimg_dl?dst_uin=172784366612&spec=640&img_type=jpg
+heroImage: http://q.qlogo.cn/headimg_dl?dst_uin=1727843612&spec=640&img_type=jpg
 actionText: 开启前端之路 →
 actionLink: /strat/
 features:

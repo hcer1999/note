@@ -1,11 +1,11 @@
 module.exports = [
   {
     text: '前端笔记',
-    link: '/notes/'
+    link: '/notes/',
   },
   {
     text: '前端面试题',
-    link: '/interview/'
+    link: '/interview/',
   },
   {
     text: '知名站点',
@@ -14,8 +14,8 @@ module.exports = [
         text: '代码托管',
         items: [
           { text: 'Github', link: 'https://github.com.com/' },
-          { text: '码云', link: 'https://gitee.com/' }
-        ]
+          { text: '码云', link: 'https://gitee.com/' },
+        ],
       },
       {
         text: '前端技术',
@@ -28,8 +28,8 @@ module.exports = [
           { text: 'Npm', link: 'https://www.npmjs.com/' },
           { text: 'ElementUI', link: 'https://element.eleme.cn/' },
           { text: 'MDUI', link: 'https://www.mdui.org/' },
-          { text: 'LayUI', link: 'https://www.layui.com/' }
-        ]
+          { text: 'LayUI', link: 'https://www.layui.com/' },
+        ],
       },
       {
         text: '博客指南',
@@ -37,10 +37,10 @@ module.exports = [
           { text: '掘金', link: 'https://juejin.im/' },
           { text: 'CSDN', link: 'https://blog.csdn.net/' },
           { text: '知乎', link: 'https://www.zhihu.com/' },
-          { text: '简书', link: 'https://www.jianshu.com/' }
-        ]
-      }
-    ]
+          { text: '简书', link: 'https://www.jianshu.com/' },
+        ],
+      },
+    ],
   },
   {
     text: '常用工具',
@@ -51,8 +51,8 @@ module.exports = [
           { text: '图片外链', link: 'https://sm.ms/' },
           { text: '10分钟邮箱', link: 'https://bccto.me/' },
           { text: '图片压缩', link: 'https://tinypng.com/' },
-          { text: '字符画生成', link: 'http://patorjk.com/software/taag/' }
-        ]
+          { text: '字符画生成', link: 'http://patorjk.com/software/taag/' },
+        ],
       },
       {
         text: '素材',
@@ -61,29 +61,26 @@ module.exports = [
           { text: 'colors', link: 'https://flatuicolors.com/' },
           { text: 'webgradients', link: 'https://webgradients.com/' },
           { text: 'fontawesome', link: 'http://www.fontawesome.com.cn/' },
-          { text: '谷歌字体', link: 'http://www.googlefonts.net/' }
-        ]
-      }
-    ]
+          { text: '谷歌字体', link: 'http://www.googlefonts.net/' },
+        ],
+      },
+    ],
   },
   {
     text: '个人站点',
     items: [
       {
         text: '博客',
-		link: 'http://blog.wcnm.kim/'
-      },{
-        text: '图片外链',
-		link: 'http://img.wcnm.kim/'
+        link: 'http://blog.bingkele.cc/',
       },
-	  {
+      {
         text: 'Github',
-		link: 'https://github.com/hcer1999'
+        link: 'https://github.com/hcer1999',
       },
       {
         text: 'Gitee',
-		link: 'https://gitee.com/hcer1999'
-      }
-    ]
-  }
-]
+        link: 'https://gitee.com/hcer1999',
+      },
+    ],
+  },
+];
