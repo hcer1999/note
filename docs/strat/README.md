@@ -4,9 +4,6 @@
 
 ### [前端面试题](/interview)
 
-
-
 #### 有问题请联系
 
-![WX](http://cdn.wcnm.kim/wx.png)![QQ](http://cdn.wcnm.kim/qq.png)
-
+![WX](http://cdn.bingkele.cc/Wechatqrcode.png)![QQ](http://cdn.bingkele.cc/QQqrcode.png)
