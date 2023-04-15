@@ -78,6 +78,8 @@ for (const element of array1) {
 
 无论是`for...in`还是`for...of`语句都是迭代一些东西。它们之间的主要区别在于它们的迭代方式。
 
+`for-of` 遍历获取的是对象的键值， `for-in` 获取的是对象的键名。
+
 `for-in`语句以任意顺序迭代对象的**可枚举属性**。
 
 `for-of` 语句遍历**可迭代对象**定义要迭代的数据。
@@ -123,6 +125,8 @@ for (let i of iterable) {
 :::
 
 ## 五. Promise、Promise.all、Promise.race 分别怎么用？
+
+`Promise` 是异步编程的一种解决方案， 它是一个对象， 可以获取异步操作的消息， 他的出现大大改善了异步编程的困境， 避免了**地狱回调**，它比传统的解决方案回调函数和事件更合理和更强大。  
 
 - Promise
 
@@ -463,6 +467,8 @@ _.throttle = function(func, wait, options) {
 
 ## 十. async/await 怎么用，如何捕获异常？
 
+async/await 其实是 `Generator` 的语法糖， 它能实现的效果都能用then链来实现， 它是为优化 then链而开发出来的。   
+
 `async` 和 `await` 的作用就是将异步代码修饰成更易于编写和后续阅读。它们使异步代码看起来更像是旧式同步代码。
 
 **使用方法**
@@ -491,6 +497,16 @@ test()
 
 1. 因为返回回来的数据是 `Promise` 对象，所以我们可以调用 `Promise` 的 `catch` 方法捕获异常
 2. 也可以使用传统的 `try...catch` 来捕获异常
+
+### 相对于Promise的优势
+
+代码读起来更加同步， `Promise` 虽然摆脱了回调地狱， 但是 then 的链式调⽤也会带来额外的阅读负担
+
+`Promise` 传递中间值⾮常麻烦， ⽽async/await⼏乎是同步的写法，⾮常优雅
+
+错误处理友好， async/await 可以⽤成熟的 try/catch，`Promise` 的错误捕获⾮常冗余
+
+调试友好， `Promise` 的调试很差， 由于没有代码块， 你不能在⼀个返回表达式的箭头函数中设置断点， 如果你在⼀个.then 代码块中使⽤调试器的步进(step-over)功能， 调试器并不会进⼊后续的.then 代码块， 因为调试器只能跟踪同步代码的每⼀步。  
 
 ## 十一. 如何实现深拷贝？
 
@@ -1080,3 +1096,349 @@ arr = null;
 比如，假定`JavaScript`同时有两个线程，一个线程在某个`DOM`节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？
 
 所以，为了避免复杂性，从一诞生，`JavaScript`就是单线程，这已经成了这门语言的核心特征，将来也不会改变。
+
+## 三十一.JavaScript 脚本延迟加载的方式有哪些？  
+
+延迟加载就是等页面加载完成之后再加载 JavaScript 文件。 js 延迟加载有助于提高页面加载速度。  
+
+1. defer 属性： 给 js 脚本添加 `defer` 属性， 这个属性会让脚本的加载与文档的解析同步解析， 然后在文档解析完成后再执行这个脚本文件， 这样的话就能使页面的渲染不被阻塞。 多个设置了 `defer` 属性的脚本按规范来说最后是顺序执行的， 但是在一些浏览器中可能不是这样。
+2. async 属性： 给 js 脚本添加 `async` 属性， 这个属性会使脚本异步加载， 不会阻塞页面的解析过程， 但是当脚本加载完成后立即执行 js脚本， 这个时候如果文档没有解析完成的话同样会阻塞。 多个 `async`属性的脚本的执行顺序是不可预测的， 一般不会按照代码的顺序依次执行。
+3. 动态创建 DOM 方式： 动态创建 DOM 标签的方式， 可以对文档的加载事件进行监听， 当文档加载完成后再动态的创建 script 标签来引入
+4. js 脚本：使用 `setTimeout` 延迟方法： 设置一个定时器来延迟加载 js 脚本文件
+5. 让JS 最后加载： 将 js 脚本放在文档的底部， 来使 js 脚本尽可能的在最后来加载执行。  
+
+## 三十二.什么是尾调用， 使用尾调用有什么好处？  
+
+尾调用指的是函数的最后一步调用另一个函数。 代码执行是基于执行栈的， 所以当在一个函数里调用另一个函数时， 会保留当前的执行上下文， 然后再新建另外一个执行上下文加入栈中。 使用尾调用的话，因为已经是函数的最后一步， 所以这时可以不必再保留当前的执行上下文， 从而节省了内存， 这就是尾调用优化。 但是 **ES6** 的尾调用优化只在严格模式下开启， 正常模式是无效的。  
+
+## 三十三.ES6 模块与 CommonJS 模块有什么异同？ 
+
+ES6 Module 和 CommonJS 模块的**区别**：
+
+CommonJS 是对模块的浅拷⻉， ES6 Module 是对模块的引⽤， 即 ES6Module 只存只读， 不能改变其值， 也就是指针指向不能变， 类似 const；
+
+import 的接⼝是 read-only（ 只读状态） ， 不能修改其变量值。 即不能修改其变量的指针指向， 但可以改变变量内部指针指向， 可以对commonJS 对重新赋值（ 改变指针指向） ， 但是对 ES6 Module 赋值会编译报错。
+
+ES6 Module 和 CommonJS 模块的**共同点**：
+CommonJS 和 ES6 Module 都可以对引⼊的对象进⾏赋值， 即对对象内部属性的值进⾏改变  
+
+## 三十四.对作用域、 作用域链的理解。
+
+### 全局作用域和函数作用域 
+
+#### 全局作用域  
+
+- 最外层函数和最外层函数外面定义的变量拥有全局作用域
+- 所有未定义直接赋值的变量自动声明为全局作用域
+
+- 所有 window 对象的属性拥有全局作用域
+
+- 全局作用域有很大的弊端， 过多的全局作用域变量会污染
+
+- 全局命名空间， 容易引起命名冲突  
+
+#### 函数作用域  
+
+- 函数作用域声明在函数内部的变量， 一般只有固定的代码片段可以访问到
+- 作用域是分层的， 内层作用域可以访问外层作用域， 反之不行  
+
+#### 块级作用域  
+
+- 使用 ES6 中新增的 `let` 和 `const` 指令可以声明块级作用域， 块级作用域可以在函数中创建也可以在一个代码块中的创建（由{ }包裹的代码片段）
+- `let` 和 `const` 声明的变量不会有**变量提升**， 也不可以重复声明
+- 在循环中比较适合绑定块级作用域， 这样就可以把声明的计数器变量限制在循环内部。  
+
+### 作用域链：  
+
+- 在当前作用域中查找所需变量， 但是该作用域没有这个变量， 那这个变量就是自由变量。 如果在自己作用域找不到该变量就去父级作用域查找， **依次向上级**作用域查找， 直到访问到 `window` 对象就被终止，这一层层的关系就是作用域链。
+- 作用域链的作用是保证对执行环境有权访问的所有变量和函数的有序访问， 通过作用域链， 可以访问到外层环境的变量和函数。
+- 作用域链的本质上是一个指向变量对象的指针列表。 变量对象是一个包含了执行环境中所有变量和函数的对象。 作用域链的前端始终都是当前执行上下文的变量对象。 全局执行上下文的变量对象（也就是全局对象） 始终是作用域链的最后一个对象。
+- 当查找一个变量时， 如果当前执行环境中没有找到， 可以沿着作用域链向后查找。  
+
+## 三十五.哪些情况会导致内存泄漏 
+
+1. 意外的全局变量： 由于使用未声明的变量， 而意外的创建了一个全局变量， 而使这个变量一直留在内存中无法被回收。
+2. 被遗忘的计时器或回调函数： 设置了 `setInterval` 定时器， 而忘记取消它， 如果循环函数有对外部变量的引用的话， 那么这个变量会被一直留在内存中， 而无法被回收。
+3. 脱离 DOM 的引用： 获取一个 DOM 元素的引用， 而后面这个元素被删除， 由于一直保留了对这个元素的引用， 所以它也无法被回收。
+4. 闭包： 不合理的使用闭包， 从而导致某些变量一直被留在内存当中。  
+
+## 三十六.数据的检测方式有哪些
+
+1. typeof
+
+```js
+console.log(typeof 2);             //number
+console.log(typeof true);          //boolean
+console.log(typeof 'str');         //string
+console.log(typeof []);            //object
+console.log(typeof function(){});  //function
+console.log(typeof undefined);     //object
+console.log(typeof null);          //undefined
+```
+
+2. instanceof
+   `instanceof`可以正确判断对象的类型， 其内部运行机制是判断在其原型链中能否找到该类型的原型。
+
+```js
+console.log(5 instanceof Number);             //false
+console.log(false instanceof Boolean);         //false
+console.log('str' instanceof String);         //false
+console.log([] instanceof Array);             //true
+console.log(function(00instanceof Function);  //true
+console.log(0 instanceof 0bject);             //true
+
+```
+
+ `instanceof` 只能正确判断引用数据类型， 而不能判断基本数据类型。 `instanceof` 运算符可以用来测试一个对象在其原型链中是否存在一个构造函数的` prototype` 属性。
+
+  3. constructor
+
+```javascript
+console.log((2).constructor === Number);               //true
+console.log((true) .constructor === Boolean);          //true
+console.log(('str').constructor === String);           //true
+console.log(([]).constructor === Array);               //true
+console.log((function() {}).constructor === Function);  //true
+console.log((0).constructor =e= 0bject);               //true
+```
+
+ `constructor`有两个作用，一是判断数据的类型，二是对象实例通过`constrcutor` 对象访问它的构造函数。 需要注意，如果创建一个对象来改变它的原型， `constructor` 就不能用来判断数据类型了。
+
+ ```javascript
+function Fn(){};
+Fn.prototype = new Array();
+var f = new Fn();
+console.log(f.constructor === Fn);    // false
+console.log(f.constructor === Array); // true
+ ```
+
+  4. Object.prototype.toString.call()
+     Object.prototype.toString.call() 使用 `Object` 对象的原型方法
+     `toString`来判断数据类型：
+
+ ```javascript
+var a = Object.prototype.toString;
+console.log(a.call(2));     //[object Number]
+console.log(a.call(true));   //[object Boolean]
+console.log(a.call('str'));  //[object String]
+console.log(a.call([]));     //[object Array]
+console.log(a.call(function(){}));   //[object Function]
+console.log(a.call({}));             //[object Object]
+console.log(a.call(undefined));      //[object Undefined]
+console.log(a.call(null));           //[object Null]
+ ```
+
+## 三十七. null 和 undefined 区别
+
+- 首先 `Undefined` 和 `Null` 都是基本数据类型， 这两个基本数据类型分别都只有一个值， 就是 `undefined` 和 `null`。
+
+- `undefined` 代表的含义是未定义， `null` 代表的含义是空对象。 一般变量声明了但还没有定义的时候会返回`undefined`， `null`主要用于赋值给一些可能会返回对象的变量， 作为初始化。`undefined` 在 `JavaScript` 中不是一个保留字， 这意味着可以使用`undefined`来作为一个变量名， 但是这样的做法是非常危险的， 它会影响对`undefined` 值的判断。 我们可以通过一些方法获得安全的`undefined`值，比如说 `void 0`。
+- 当对这两种类型使用 `typeof `进行判断时， `Null`类型化会返回`object` ，这是一个历史遗留的问题。 当使用双等号对两种类型的值进行比较时会返回`true`， 使用三个等号时会返回 `false`。
+
+## 三十八. intanceof 操作符的实现原理及实现
+
+`instanceof`运算符用于判断构造函数的 `prototype` 属性是否出现在对象的原型链中的任何位置。
+
+```javascript
+function myInstanceof(left, right) {
+  //获取对象的原型
+  let proto = object.getPrototypeof(left) //获取构造函数的 prototype对象
+  let prototype = right.prototype
+  //判断构造函数的prototype对象是否在对象的原型链上
+  while (true) {
+    if (!proto) return false
+    if ((proto = prototype)) return true
+    //如果没有找到,就继续从其原型上找，object.getPrototypeof方法用来获取指定对象的原型
+    proto = object.getprototypeof(proto)
+  }
+}
+```
+
+## 三十九.  如何获取安全的 undefined 值？  
+
+因为 `undefined` 是一个标识符， 所以可以被当作变量来使用和赋值，但是这样会影响 `undefined` 的正常判断。 表达式 `void ___` 没有返回值， 因此返回结果是 `undefined`。` void` 并不改变表达式的结果，只是让表达式不返回值。 因此可以用 `void 0` 来获得 `undefined`。  
+
+## 四十. Object.is() 与比较操作符 “ ===” 、 “ ==” 的区别？  
+
+- 使用双等号（ ==） 进行相等判断时，如果两边的类型不一致，则会进行强制类型转化后再进行比较。
+
+- 使用三等号（ ===）进行相等判断时，如果两边的类型不一致时，不会做强制类型准换， 直接返回 `false`。
+
+- 使用 `Object.is` 来进行相等判断时，一般情况下和三等号的判断相同，它处理了一些特殊的情况， 比如 -0 和 +0 不再相等， 两个 `NaN`是相等的。  
+
+## 四十一. 什么是 JavaScript 中的包装类型？  
+
+在 JavaScript 中， 基本类型是没有属性和方法的， 但是为了便于操作基本类型的值， 在调用基本类型的属性或方法时 JavaScript 会在后台隐式地将基本类型的值转换为对象， 如：  
+
+```javascript
+const a = "abc" ;
+a.length;  // 3
+a.toUpperCase();// "ABC”"
+```
+
+在 访 问` 'abc'.length` 时 ， JavaScript 将 `'abc' `在 后 台 转 换 成`String('abc')`， 然后再访问其 `length` 属性。
+`JavaScript` 也可以使用 `Object` 函数显式地将基本类型转换为包装类型：  
+
+```javascript
+var a = 'abc'
+0bject(a)// String {"abc"}
+```
+
+也可以使用 valueOf 方法将包装类型倒转成基本类型：  
+
+```javascript
+var a = 'abc"
+var b = Object(a)
+var c = b.valueof( // "abc"
+```
+
+看看如下代码会打印出什么：  
+
+```javascript
+var a = new Boolean(false);
+if(!a) {
+console.log("Oops” );// never runs
+}
+```
+
+答案是什么都不会打印， 因为虽然包裹的基本类型是 `false`， 但是`false` 被包裹成包装类型后就成了对象， 所以其非值为 `false`， 所以循环体中的内容不会运行。  
+
+## 四十二. 为什么会有 BigInt 的提案？  
+
+JavaScript 中 `Number.MAX_SAFE_INTEGER` 表示最⼤安全数字， 计算结果是 `9007199254740991`， 即在这个数范围内不会出现精度丢失（小数除外） 。 但是⼀旦超过这个范围， js 就会出现计算不准确的情况，这在⼤数计算的时候不得不依靠⼀些第三⽅库进⾏解决， 因此官⽅提出了 `BigInt` 来解决此问题。 
+
+## 四十三. 如何判断一个对象是空对象 ?
+
+1. 使用 JSON 自带的.stringify 方法来判断  :
+
+   ```javascript
+   if(json.stringify(0bj)=='{}'){
+       console.log('空对象");
+   }
+   ```
+
+2. 使用 ES6 新增的方法 Object.keys()来判断：  
+
+   ```javascript
+   if(Object.keys(Obj).length < 0){
+   console.log("空对象");
+   }
+   ```
+
+## 四十四. const 对象的属性可以修改吗  ?
+
+`const` 保证的并不是变量的值不能改动， 而是变量指向的那个内存地址不能改动。 对于基本类型的数据（ 数值、 字符串、 布尔值） ，其值就保存在变量指向的那个内存地址， 因此等同于常量。
+但对于引用类型的数据（ 主要是对象和数组） 来说， 变量指向数据的内存地址， 保存的只是一个指针， `const` 只能保证这个指针是固定不变的， 至于它指向的数据结构是不是可变的， 就完全不能控制了。  
+
+## 四十五. 如果 new 一个箭头函数的会怎么样 ?
+
+箭头函数是 `ES6` 中的提出来的， 它没有 `prototype`， 也没有自己的 `this`指向， 更不可以使用 `arguments` 参数， 所以不能` New` 一个箭头函数。
+
+new 操作符的实现步骤如下：
+1.创建一个对象
+2.将构造函数的作用域赋给新对象（ 也就是将对象的__proto__属性指向构造函数的 `prototype` 属性）
+3.指向构造函数中的代码， 构造函数中的 `this` 指向该对象（ 也就是为这个对象添加属性和方法）
+4.返回新的对象
+所以， 上面的第二、 三步， 箭头函数都是没有办法执行的 。
+
+## 四十六.Ajax 解决浏览器缓存问题？  
+
+1. 在 ajax 发送请求前加上
+
+   ```javascript
+   anyAjaxObj.setRequestHeader("If-Modified-Since","0") 
+   ```
+
+2. 在 ajax 发送请求前加上
+
+   ```javascript
+   anyAjaxObj.setRequestHeader("Cache-Control","no-cache")
+   ```
+
+3. 在 URL 后面加上一个随机数
+
+   ```javascript
+   "fresh=" + Math.random();
+   ```
+
+4. 在 URL 后面加上时间戳
+
+   ```javascript
+    "nowtime=" + new Date().getTime();
+   ```
+
+## 四十七.Javascript 中， 有一个函数， 执行时对象查找时， 永远不会去查找原型，这个函数是？  
+
+**hasOwnProperty**  
+
+所有继承了 `Object` 的对象都会继承到 `hasOwnProperty` 方法。 这个方法可以用来检测一个对
+象是否含有特定的自身属性， 和`in`运算符不同， 该方法会忽略掉那些从原型链上继承到的属性 。
+
+## 四十八.如何判断一个对象是否属于某个类 ?
+
+1. 使用 `instanceof` 运算符来判断构造函数的 `prototype` 属性是否出现在对象的原型链中的任何位置。
+2. 通过对象的 `constructor` 属性来判断， 对象的 `constructor` 属性指向该对象的构造函数， 但是这种方式不是很安全， 因为 `constructor` 属性可以被改写。
+3. 如果需要判断的是某个内置的引用类型的话， 可以使用`Object.prototype.toString()` 方法来打印对象的  
+
+## 四十九.如何实现数组的随机排序？  
+```javascript
+// （1） 使用数组 sort 方法对数组元素随机排序， 让 Math.random() 出来的数与 0.5 比较， 如果大于就返回 1 交换位置， 如果小于就返回 -1， 不交换位置。
+function randomSort(a, b) {
+return Math.random() > 0.5 ? -1 : 1;
+}
+// 缺点： 每个元素被派到新数组的位置不是随机的， 原因是 sort() 方法是依次比较的。
+```
+```javascript
+// （2） 随机从原数组抽取一个元素， 加入到新数组
+function randomSort(arr) {
+var result = [];
+while (arr.length > 0) {
+var randomIndex = Math.floor(Math.random() * arr.length);
+result.push(arr[randomIndex]);
+arr.splice(randomIndex, 1);
+} 
+return result;
+}
+```
+```javascript
+// （3） 随机交换数组内的元素（ 洗牌算法类似）
+function randomSort(arr) {
+var index,
+randomIndex,
+temp,
+len = arr.length;
+for (index = 0; index < len; index++) {
+randomIndex = Math.floor(Math.random() * (len - index)) + index;
+temp = arr[index];
+arr[index] = arr[randomIndex];
+arr[randomIndex] = temp;
+} 
+return arr;
+}
+```
+
+```javascript
+// es6
+function randomSort(array) {
+let length = array.length;
+if (!Array.isArray(array) || length <= 1) return;
+for (let index = 0; index < length - 1; index++) {
+let randomIndex = Math.floor(Math.random() * (length - index)) + index;
+[array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+}
+return array;
+}
+```
+
+## 五十.说几条写 JavaScript 的基本规范？  
+
+1. 一个函数作用域中所有的变量声明应该尽量提到函数首部， 用一个 var 声明， 不允许出现两个连续的 var 声明， 声明时如果变量没有值， 应该给该变量赋值对应类型的初始值， 便于他人阅读代码时， 能够一目了然的知道变量对应的类型值。
+2. 代码中出现地址、时间等字符串时需要使用常量代替。
+3. 在进行比较的时候吧， 尽量使用'===', '!=='代替'==', '!='。
+4. 不要在内置对象的原型上添加方法， 如 `Array`, `Date`。
+5. `switch` 语句必须带有 `default` 分支。
+6.  `for` 循环必须使用大括号。
+7.  `if` 语句必须使用大括号。  
+
+
+

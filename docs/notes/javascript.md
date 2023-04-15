@@ -1,6 +1,7 @@
 # JavaScript
 目录
 [[toc]]
+
 ## 组成部分
 
 - ECMAscript（核心）
@@ -1019,13 +1020,13 @@ var obj = { name: '张三' }
 
 我们在没有对obj进行任何其他操作之前，发现obj中已经有几个属性(方法)了：
 
-![Markdown](http://cdn.wcnm.kim/FsDHRbrABa373HfHotYlhzGhAfcw)
+![Markdown](http://cdn.bingkele.cc/FsDHRbrABa373HfHotYlhzGhAfcw)
 
 **那么问题来了：`valueOf` / `toString` / `constructor` 是怎么来？我们并没有给 `obj.valueOf` 赋值呀。**
 
 要搞清楚 `valueOf` / `toString` / `constructor` 是怎么来的，我们用 `console.dir` 打印一下。
 
-![Markdown](http://cdn.wcnm.kim/FrDgaBD36IcxIkgLt92_dZcnc1GN)
+![Markdown](http://cdn.bingkele.cc/FrDgaBD36IcxIkgLt92_dZcnc1GN)
 
 我们发现 `console.dir(obj)` 打出来的结果是：
 
@@ -1119,7 +1120,7 @@ obj.toString = function(){ return '新的 toString 方法' }
 
 一个士兵的在计算机里就是一堆属性，如下图：
 
-![Markdown](http://cdn.wcnm.kim/FijrWxjaoLwt7reStY3-WH43tTSP)
+![Markdown](http://cdn.bingkele.cc/FijrWxjaoLwt7reStY3-WH43tTSP)
 
 我们只需要这样就可以制造一个士兵：
 
